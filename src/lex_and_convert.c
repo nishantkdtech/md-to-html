@@ -11,8 +11,10 @@ int main() {
     FILE* md_file;
     char* input = argv[1];
     int state; /* 0 for string literal, 1 for part of HTML tag, 2 for part of comment */
+    char* current_word; /* current word that is being parsed */
+    char* current_tag; /* current tag (so it is easier to close the current HTML tag that is open) */
     
-    md_file = fopen(input, "r"); /* Open input file */
+    input_file = fopen(input, "r"); /* Open input file */
     
     if(!input_file) { /* fopen returned NULL */
         perror("Could not open input file\n");
@@ -22,7 +24,7 @@ int main() {
     
     else {
         int found_word = 0;
-        while((c = fgetc(input_file)) != 0) {
+        while((c = fgetc(input_file)) != 0) { /* parse through file for HTML and string literals */
             if(isalpha(c) && (state == 0 || state == 1)) /* c is an alphabet, and is thus part of a string literal or markdown-flavored HTML */
                 putchar(c); /* put the string back in the file unharmed */
             else if(c == '<') { /* Beginning of tag in markdown */
@@ -40,5 +42,14 @@ int main() {
             }
             /* todo: add syntax highlighting, highlighting, strikethough, bold, italics, other stuff */
         }
+        
+        rewind(input_file); /* re-open input file for parsing */
+        
+        while(fscanf(s, "%s", current_word)) {
+            if(current_word[1] == current_word[2]) {
+                switch(current_word[1]) {
+                    case '*':
+                        current_tag = "b";
+                    case
     }
 }
