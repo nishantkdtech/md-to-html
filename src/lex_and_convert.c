@@ -13,6 +13,7 @@ int main() {
     int state; /* 0 for string literal, 1 for part of HTML tag, 2 for part of comment */
     char* current_word; /* current word that is being parsed */
     char* current_tag; /* current tag (so it is easier to close the current HTML tag that is open) */
+    int taglen; /* strlen for current_tag */
     
     input_file = fopen(input, "r"); /* Open input file */
     
@@ -46,9 +47,13 @@ int main() {
         rewind(input_file); /* re-open input file for parsing */
         
         while(fscanf(s, "%s", current_word)) {
-            if(current_word[1] == current_word[2]) {
+            taglen = strlen(current_word)
+            if(current_word[1] == current_word[taglen - 1]) {
                 switch(current_word[1]) {
                     case '*':
+                        if(current_word[2] == '*')
+                            current_tag = "b";
+                        /* todo: implement both bold AND italic at the same time */
                         current_tag = "b";
                     case
     }
