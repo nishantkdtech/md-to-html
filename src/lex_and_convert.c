@@ -13,6 +13,7 @@ int main() {
     int state; /* 0 for string literal, 1 for part of HTML tag, 2 for part of comment */
     char* current_word; /* current word that is being parsed */
     char* current_tag; /* current tag (so it is easier to close the current HTML tag that is open) */
+    char* temp_array;
     int taglen; /* strlen for current_tag */
     
     input_file = fopen(input, "r"); /* Open input file */
@@ -50,11 +51,23 @@ int main() {
             taglen = strlen(current_word)
             if(current_word[1] == current_word[taglen - 1]) {
                 switch(current_word[1]) {
-                    case '*':
-                        if(current_word[2] == '*')
+                    ASTERISK:case '*': /* bold and/or italic */
+                        if(current_word[2] == current_word[1])
                             current_tag = "b";
-                        /* todo: implement both bold AND italic at the same time */
-                        current_tag = "b";
-                    case
+                            if(current_word[2] == current_word[1] && current_word[3] == current_word[1]) { 
+                                current_tag = "bi"; /* bold and italic */
+                            }
+                        /* because what kind of a sick mind would create an empty italic section? */
+                        current_tag = "i";
+                        break;
+                    case '_': /* another way to embolden */
+                        goto ASTERISK;
+                    case '~':
+                    
     }
+}
+
+void copy_string_part(char* source, char* destination, int begin, int end) { /* copy a part of the string */
+    int i = end - begin + 1;
+    
 }
