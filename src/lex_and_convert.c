@@ -8,7 +8,7 @@
 
 int main() {
     int c;
-    FILE* md_file;
+    FILE* input_file; /* Markdown file */
     char* input = argv[1];
     int state; /* 0 for string literal, 1 for part of HTML tag, 2 for part of comment */
     char* current_word; /* current word that is being parsed */
@@ -26,7 +26,9 @@ int main() {
     
     else {
         int found_word = 0;
-        while((c = fgetc(input_file)) != 0) { /* parse through file for HTML and string literals */
+
+        /* Copy HTML tags that already exist in the base document */
+        while((c = fgetc(input_file)) != EOF) { /* parse through file for HTML and string literals */
             if(isalpha(c) && (state == 0 || state == 1)) /* c is an alphabet, and is thus part of a string literal or markdown-flavored HTML */
                 putchar(c); /* put the string back in the file unharmed */
             else if(c == '<') { /* Beginning of tag in markdown */
@@ -47,6 +49,7 @@ int main() {
         
         rewind(input_file); /* re-open input file for parsing */
         
+        /* Convert markdown into HTML */
         while(fscanf(s, "%s", current_word)) {
             taglen = strlen(current_word)
             if(current_word[1] == current_word[taglen - 1]) {
@@ -55,19 +58,30 @@ int main() {
                         if(current_word[2] == current_word[1])
                             current_tag = "b";
                             if(current_word[2] == current_word[1] && current_word[3] == current_word[1]) { 
-                                current_tag = "bi"; /* bold and italic */
+                                current_tag = "b i"; /* bold and italic */
                             }
-                        /* because what kind of a sick mind would create an empty italic section? */
-                        current_tag = "i";
+                        /* because what kind of a sick mind would create an empty italic string? */
+                        else
+                            current_tag = "i";
                         break;
-                    case '_': /* another way to embolden */
+                    case '_': /* another way to embolden or italicize */
                         goto ASTERISK;
-                    case '~':
-                    
+                    case '~': /* strikethrough */
+                        current_tag = "s";
+                        break;
+                    case '`': /* code (inline and block) */
+                        if(current_word[1] == current_word[2]) { /* code block */
+                            current_tag = "code pre"; /* code-ifies and preserves formatting */
+                            break;
+                        }
+                        current_tag = "code";
+                        break;
+                    case '\\': /* escape character is backslash */
     }
 }
 
 void copy_string_part(char* source, char* destination, int begin, int end) { /* copy a part of the string */
     int i = end - begin + 1;
-    
+    for(int j = 0; j <= i; j++)
+        destination[begin + j] =  
 }
